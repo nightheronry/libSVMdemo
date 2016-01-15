@@ -1,0 +1,27 @@
+﻿//以下程式是我用來產生資料用的
+//可以修改以產生其他資料
+//資料庫以sqlite儲存，可以使用管理工具檢視
+//下載網址：http://sqliteadmin.orbmu2k.de/ (免安裝)
+// FUNction (100/1/14)
+
+try{
+	Class.forName("org.sqlite.JDBC");
+	Connection conn = DriverManager.getConnection("jdbc:sqlite:sparseData.s3db");
+	PreparedStatement prep = conn.prepareStatement("INSERT INTO data ('label', 'rdk1', 'rdk2') values (?, ?, ?);");
+		    
+	for(int i = 0; i < 5000; i++){
+		int rdk1 = (int)((Math.random()*3000)+1);
+		int rdk2 = (int)((Math.random()*3000)+1);
+		int labal = (rdk1 > 1500 || rdk2 < 1500)?1:-1;
+		prep.setInt(1, labal);
+		prep.setInt(2, rdk1);
+		prep.setInt(3, rdk2);
+		prep.addBatch();
+	}
+
+	conn.setAutoCommit(false);
+	prep.executeBatch();
+	conn.setAutoCommit(true);
+}catch(Exception e){
+	e.printStackTrace();
+}
